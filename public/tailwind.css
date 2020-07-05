@@ -17897,6 +17897,14 @@ video {
   background-color: red;
 }
 
+.headposition {
+  background-color: black;
+}
+
+.snaketail {
+  background-color: gray;
+}
+
 @media (min-width: 640px) {
   .sm\:space-y-0 > :not(template) ~ :not(template) {
     --space-y-reverse: 0;
