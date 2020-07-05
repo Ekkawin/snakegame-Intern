@@ -6,6 +6,8 @@ export default () => {
   const [row, setRow] = useState(10);
   const [col, setCol] = useState(10);
   const [grid, setGrid] = useState([]);
+  const [direction, setDirection] = useState('ArrowLeft');
+  const [time, setTime] = useState(3000);
   const [snakeHead, setSnakeHead] = useState({
     rows: 1,
     cols: 1,
@@ -22,34 +24,22 @@ export default () => {
   };
 
   const item = grid.map((e) => {
-    console.log(e);
-    console.log(e.propItem);
-
     return (
       <div
         className={
           e.propItem ? `${e.propItem}` + ' snakegrid-item' : 'snakegrid-item'
         }
-        key={e.rols + e.cols}
+        key={`${e.rows} ${e.cols}`}
       >
         {' '}
       </div>
     );
   });
+  const interval = () => {
+    console.log(direction);
 
-  useEffect(() => {
-    setFood({
-      rows: 1,
-      cols: 1,
-    });
-    setSnakeHead({
-      rows: 1,
-      cols: 9,
-    });
     const initialgrid = [];
     for (let rows = 0; rows < row; rows++) {
-      console.log(rows);
-
       for (let cols = 0; cols < col; cols++) {
         initialgrid.push({
           rows,
@@ -59,10 +49,33 @@ export default () => {
       }
     }
     setGrid(initialgrid);
+    switch (direction) {
+      case 'ArrowLeft':
+        snakeHead.cols--;
+        break;
+      case 'ArrowUp':
+        snakeHead.rows--;
+        break;
+      case 'ArrowDown':
+        snakeHead.rows++;
+        break;
+      case 'ArrowRight':
+      default:
+        snakeHead.cols++;
+        break;
+    }
+
+    console.log('This will run every second!');
+  };
+
+  useEffect(() => {
     window.addEventListener('keydown', function (e) {
-      console.log(e);
+      console.log(e.code);
+
+      setDirection(e.code);
+      setInterval(interval, 2000);
     });
-  }, []);
+  }, [direction]);
   console.log(food);
 
   return (
