@@ -1,23 +1,51 @@
 import { useState, useEffect } from 'react';
 import { SnakeContainer } from 'components/snakeContainer';
-const keypress = (e) => {
-  console.log('WORKING');
-
-  console.log(e);
-};
+import { Head } from 'next/document';
 
 export default () => {
   const [row, setRow] = useState(10);
   const [col, setCol] = useState(10);
   const [grid, setGrid] = useState([]);
+  const [snakeHead, setSnakeHead] = useState({
+    rows: 1,
+    cols: 1,
+  });
+  const [food, setFood] = useState({
+    rows: 1,
+    cols: 9,
+  });
+
+  const gridType = (r, c) => {
+    if (food?.rows === r && food?.cols === c) return 'foodposition';
+    if (snakeHead?.rows === r && snakeHead?.cols === c) return 'headposition';
+    else return null;
+  };
+
   const item = grid.map((e) => {
+    console.log(e);
+    console.log(e.propItem);
+
     return (
-      <div className="snakegrid-item" key={e.rols + e.cols}>
+      <div
+        className={
+          e.propItem ? `${e.propItem}` + ' snakegrid-item' : 'snakegrid-item'
+        }
+        key={e.rols + e.cols}
+      >
         {' '}
       </div>
     );
   });
+
   useEffect(() => {
+    setFood({
+      rows: 1,
+      cols: 1,
+    });
+    setSnakeHead({
+      rows: 1,
+      cols: 9,
+    });
     const initialgrid = [];
     for (let rows = 0; rows < row; rows++) {
       console.log(rows);
@@ -26,6 +54,7 @@ export default () => {
         initialgrid.push({
           rows,
           cols,
+          propItem: gridType(rows, cols),
         });
       }
     }
@@ -34,15 +63,11 @@ export default () => {
       console.log(e);
     });
   }, []);
-  console.log(grid);
+  console.log(food);
 
   return (
-    <div onKeyPress={(e) => console.log('hi')}>
-      <SnakeContainer onKeyDown={keypress}>
-        <div className="snakegrid" onKeyDown={(e) => console.log(e)}>
-          {item}
-        </div>
-      </SnakeContainer>
-    </div>
+    <SnakeContainer>
+      <div className="snakegrid">{item}</div>
+    </SnakeContainer>
   );
 };
