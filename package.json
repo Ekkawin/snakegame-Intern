@@ -1,0 +1,24 @@
+{
+  "name": "Snake",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "antd": "^4.4.0",
+    "next": "^9.4.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "tailwindcss": "^1.4.6"
+  },
+  "scripts": {
+    "build:style": "tailwind build public/style.css -c tailwind.config.js -o public/tailwind.css",
+    "dev": "yarn run build:style && next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.14",
+    "@types/react": "^16.9.41",
+    "typescript": "^3.9.6"
+  }
+}
