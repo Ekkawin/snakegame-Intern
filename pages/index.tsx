@@ -53,7 +53,6 @@ export default () => {
       randomFoodPosition(food, tail.concat([[snakeHead.rows, snakeHead.cols]]));
       setTime(time * 0.7 + 100);
     }
-
     const initialgrid = [];
     for (let rows = 0; rows < row; rows++) {
       for (let cols = 0; cols < col; cols++) {
@@ -69,7 +68,7 @@ export default () => {
     console.log('This will run every second!');
   };
 
-  useEffect(() => {
+  useEffect(() => 
     console.log(direction, 'direction');
 
     const intervalID = setInterval(interval, time);
@@ -80,7 +79,7 @@ export default () => {
       setDirection(e.code);
     });
     // setInterval(() => console.log(direction), 5000);
-    return () => clearInterval(intervalID);
+    return () => {clearInterval(intervalID);
   }, [direction, eatFood]);
   console.log(food);
 
