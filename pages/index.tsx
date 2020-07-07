@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { SnakeContainer } from 'components/snakeContainer';
-import { useRouter, Router } from 'next/router';
+import { directionControls } from 'features/directionControls';
 import { isEatFood, randomFoodPosition } from 'features/foodProcesses';
 import { gridProcess, gridType } from 'features/gridProcesses';
-import { directionControls } from 'features/directionControls';
+import { gameOver } from 'features/gameOver';
+import { useRouter } from 'next/router';
+import { growTail } from 'features/growTail';
 
 export default () => {
-  useRouter();
   const [row, setRow] = useState(10);
   const [col, setCol] = useState(10);
   const [grid, setGrid] = useState([]);
-  const [direction, setDirection] = useState('KeyD');
+  const [direction, setDirection] = useState('ArrowLeft');
   const [time, setTime] = useState(1000);
   const [tail, setTail] = useState([]);
   const [eatFood, setEatFood] = useState(false);
+  const [timeID, setTimeID] = useState(null);
   const [snakeHead, setSnakeHead] = useState({
     rows: 1,
     cols: 1,
@@ -22,27 +24,7 @@ export default () => {
     rows: 1,
     cols: 9,
   });
-
-  const tailPop = () => {
-    if (eatFood) {
-      console.log('tailpop eat food TRUE');
-
-      tail.unshift([snakeHead.rows, snakeHead.cols]);
-      setEatFood(false);
-    } else {
-      console.log('tailpop eat food FALSE');
-      tail.unshift([snakeHead.rows, snakeHead.cols]);
-      tail.pop();
-    }
-  };
-
   const router = useRouter();
-  const gameOver = () => {
-    if (tail.some((e) => e[0] == snakeHead.rows && e[1] == snakeHead.cols)) {
-      console.log('Game Over');
-      router.push('/gameover');
-    }
-  };
 
   const item = grid.map((e) => {
     return (
@@ -57,10 +39,10 @@ export default () => {
     );
   });
   const interval = () => {
-    tailPop();
+    growTail(eatFood, tail, snakeHead, setEatFood);
     directionControls(direction, snakeHead);
-
     gridProcess(snakeHead);
+    gameOver(tail, snakeHead, clearInterval(), timeID, router);
     if (
       isEatFood(
         food,
@@ -82,20 +64,20 @@ export default () => {
       }
     }
     setGrid(initialgrid);
+
+    console.log('This will run every second!');
   };
 
-  useEffect(() => 
-    console.log(direction, 'direction');
-
+  useEffect(() => {
     const intervalID = setInterval(interval, time);
+    setTimeID(intervalID);
     window.addEventListener('keydown', function (e) {
       console.log(e.code, 'setdirection');
-      console.log(snakeHead);
 
       setDirection(e.code);
     });
     // setInterval(() => console.log(direction), 5000);
-    return () => {clearInterval(intervalID);
+    return () => clearInterval(intervalID);
   }, [direction, eatFood]);
 
   return (
