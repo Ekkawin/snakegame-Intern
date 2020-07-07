@@ -1,14 +1,21 @@
 import { useState, useEffect } from 'react';
 import { SnakeContainer } from 'components/snakeContainer';
-import { Head } from 'next/document';
+import { directionControls } from 'features/directionControls';
+import { isEatFood, randomFoodPosition } from 'features/foodProcesses';
+import { gridProcess, gridType } from 'features/gridProcesses';
+import { gameOver } from 'features/gameOver';
+import { useRouter } from 'next/router';
+import { growTail } from 'features/growTail';
 
 export default () => {
   const [row, setRow] = useState(10);
   const [col, setCol] = useState(10);
   const [grid, setGrid] = useState([]);
   const [direction, setDirection] = useState('ArrowLeft');
-  const [time, setTime] = useState(3000);
+  const [time, setTime] = useState(1000);
   const [tail, setTail] = useState([]);
+  const [eatFood, setEatFood] = useState(false);
+  const [timeID, setTimeID] = useState(null);
   const [snakeHead, setSnakeHead] = useState({
     rows: 1,
     cols: 1,
@@ -17,6 +24,7 @@ export default () => {
     rows: 1,
     cols: 9,
   });
+  const router = useRouter();
 
   const item = grid.map((e) => {
     return (
@@ -31,22 +39,20 @@ export default () => {
     );
   });
   const interval = () => {
-    switch (direction) {
-      case 'ArrowLeft':
-        snakeHead.cols--;
-        break;
-      case 'ArrowUp':
-        snakeHead.rows--;
-        break;
-      case 'ArrowDown':
-        snakeHead.rows++;
-        break;
-      case 'ArrowRight':
-      default:
-        snakeHead.cols++;
-        break;
+    growTail(eatFood, tail, snakeHead, setEatFood);
+    directionControls(direction, snakeHead);
+    gridProcess(snakeHead);
+    gameOver(tail, snakeHead, clearInterval(), timeID, router);
+    if (
+      isEatFood(
+        food,
+        tail.concat([[snakeHead.rows, snakeHead.cols]]),
+        setEatFood
+      )
+    ) {
+      randomFoodPosition(food, tail.concat([[snakeHead.rows, snakeHead.cols]]));
+      setTime(time * 0.7 + 100);
     }
-    isEatFood(snakeHead.rows, snakeHead.cols);
 
     const initialgrid = [];
     for (let rows = 0; rows < row; rows++) {
@@ -54,7 +60,7 @@ export default () => {
         initialgrid.push({
           rows,
           cols,
-          propItem: gridType(rows, cols),
+          propItem: gridType(food, snakeHead, tail, rows, cols),
         });
       }
     }
@@ -66,7 +72,8 @@ export default () => {
   useEffect(() => {
     console.log(direction, 'direction');
 
-    const intervalID = setInterval(interval, 1000);
+    const intervalID = setInterval(interval, time);
+    setTimeID(intervalID);
     window.addEventListener('keydown', function (e) {
       console.log(e.code, 'setdirection');
 
@@ -74,7 +81,7 @@ export default () => {
     });
     // setInterval(() => console.log(direction), 5000);
     return () => clearInterval(intervalID);
-  }, [direction]);
+  }, [direction, eatFood]);
   console.log(food);
 
   return (
