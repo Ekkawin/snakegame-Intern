@@ -68,9 +68,7 @@ export default () => {
     console.log('This will run every second!');
   };
 
-  useEffect(() => 
-    console.log(direction, 'direction');
-
+  useEffect(() => {
     const intervalID = setInterval(interval, time);
     setTimeID(intervalID);
     window.addEventListener('keydown', function (e) {
@@ -79,9 +77,8 @@ export default () => {
       setDirection(e.code);
     });
     // setInterval(() => console.log(direction), 5000);
-    return () => {clearInterval(intervalID);
+    return () => clearInterval(intervalID);
   }, [direction, eatFood]);
-  console.log(food);
 
   return (
     <SnakeContainer>
