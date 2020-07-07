@@ -17885,6 +17885,7 @@ video {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  outline: 1px solid black;
 }
 
 .snakegrid-item {
