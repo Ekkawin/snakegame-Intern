@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { SnakeContainer } from 'components/snakeContainer';
 import { useRouter, Router } from 'next/router';
+import { isEatFood, randomFoodPosition } from 'features/foodProcesses';
+import { gridProcess, gridType } from 'features/gridProcesses';
+import { directionControls } from 'features/directionControls';
 
 export default () => {
   useRouter();
@@ -19,26 +22,7 @@ export default () => {
     rows: 1,
     cols: 9,
   });
-  const isEatFood = (arr) => {
-    console.log(food.rows, arr[arr.length - 1][0]);
-    console.log(food.cols, arr[arr.length - 1][0]);
-    console.log(arr);
 
-    if (
-      food.rows === arr[arr.length - 1][0] &&
-      food.cols === arr[arr.length - 1][1]
-    ) {
-      setEatFood(true);
-      setTime(time * 0.7 + 100);
-      console.log(time);
-
-      while (arr.some((e) => e[0] == food.rows && e[1] == food.cols)) {
-        food.rows = Math.round(Math.random() * (row - 1));
-        food.cols = Math.round(Math.random() * (col - 1));
-      }
-    }
-    console.log('FoodPosition', food.rows, food.cols);
-  };
   const tailPop = () => {
     if (eatFood) {
       console.log('tailpop eat food TRUE');
@@ -51,45 +35,13 @@ export default () => {
       tail.pop();
     }
   };
-  const checkGridRow = () => {
-    switch (snakeHead.rows) {
-      case -1:
-        snakeHead.rows = 9;
 
-        break;
-      case 10:
-        snakeHead.rows = 0;
-
-        break;
-      default:
-    }
-  };
-  const checkGridCol = () => {
-    switch (snakeHead.cols) {
-      case -1:
-        snakeHead.cols = 9;
-
-        break;
-      case 10:
-        snakeHead.cols = 0;
-
-        break;
-      default:
-    }
-  };
   const router = useRouter();
   const gameOver = () => {
     if (tail.some((e) => e[0] == snakeHead.rows && e[1] == snakeHead.cols)) {
       console.log('Game Over');
       router.push('/gameover');
     }
-  };
-
-  const gridType = (r, c) => {
-    if (food?.rows === r && food?.cols === c) return 'foodposition';
-    if (snakeHead?.rows === r && snakeHead?.cols === c) return 'headposition';
-    if (tail.some((e) => e[0] == r && e[1] == c)) return 'snaketail';
-    else return null;
   };
 
   const item = grid.map((e) => {
@@ -106,47 +58,33 @@ export default () => {
   });
   const interval = () => {
     tailPop();
-    switch (direction) {
-      case 'KeyA':
-        snakeHead.cols--;
+    directionControls(direction, snakeHead);
 
-        break;
-      case 'KeyW':
-        snakeHead.rows--;
-
-        break;
-      case 'KeyS':
-        snakeHead.rows++;
-
-        break;
-      case 'KeyD':
-      default:
-        snakeHead.cols++;
-
-        break;
+    gridProcess(snakeHead);
+    if (
+      isEatFood(
+        food,
+        tail.concat([[snakeHead.rows, snakeHead.cols]]),
+        setEatFood
+      )
+    ) {
+      randomFoodPosition(food, tail.concat([[snakeHead.rows, snakeHead.cols]]));
+      setTime(time * 0.7 + 100);
     }
-    checkGridRow();
-    console.log('chage head row', snakeHead.rows);
-
-    checkGridCol();
-    console.log('chage head col', snakeHead.cols);
-    gameOver();
-    isEatFood(tail.concat([[snakeHead.rows, snakeHead.cols]]));
-
     const initialgrid = [];
     for (let rows = 0; rows < row; rows++) {
       for (let cols = 0; cols < col; cols++) {
         initialgrid.push({
           rows,
           cols,
-          propItem: gridType(rows, cols),
+          propItem: gridType(food, snakeHead, tail, rows, cols),
         });
       }
     }
     setGrid(initialgrid);
   };
 
-  useEffect(() => {
+  useEffect(() => 
     console.log(direction, 'direction');
 
     const intervalID = setInterval(interval, time);
@@ -157,7 +95,7 @@ export default () => {
       setDirection(e.code);
     });
     // setInterval(() => console.log(direction), 5000);
-    return () => clearInterval(intervalID);
+    return () => {clearInterval(intervalID);
   }, [direction, eatFood]);
 
   return (
