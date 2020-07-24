@@ -11,7 +11,7 @@ export default () => {
   const [row, setRow] = useState(10);
   const [col, setCol] = useState(10);
   const [grid, setGrid] = useState([]);
-  const [direction, setDirection] = useState('ArrowLeft');
+  const [direction, setDirection] = useState('KeyD');
   const [time, setTime] = useState(1000);
   const [tail, setTail] = useState([]);
   const [eatFood, setEatFood] = useState(false);
@@ -65,19 +65,45 @@ export default () => {
     }
     setGrid(initialgrid);
 
-    console.log('This will run every second!');
+    // console.log('This will run every second!');
   };
+  const preventReverseDirection = (newdirection) => {
+    if (direction == 'KeyA' && newdirection == 'KeyD') {
+      // console.log('new', newdirection, 'old', direction);
+      return direction;
+    } else if (direction == 'KeyS' && newdirection == 'KeyW') {
+      // console.log('new', newdirection, 'old', direction);
+      return direction;
+    } else if (direction == 'KeyD' && newdirection == 'KeyA') {
+      // console.log('new', newdirection, 'old', direction);
+      return direction;
+    } else if (direction == 'KeyW' && newdirection == 'KeyS') {
+      // console.log('new', newdirection, 'old', direction);
+      return direction;
+    } else {
+      console.log('new direction');
 
+      return newdirection;
+    }
+  };
+  const handleListener = async (event) => {
+    let finaldirection = await preventReverseDirection(event.code);
+    // console.log('from handle listener', event);
+    // console.log(finaldirection);
+    // console.log('setdirection');
+    // console.log('Direction', event.code);
+
+    return setDirection(finaldirection);
+  };
   useEffect(() => {
     const intervalID = setInterval(interval, time);
     setTimeID(intervalID);
-    window.addEventListener('keydown', function (e) {
-      console.log(e.code, 'setdirection');
-
-      setDirection(e.code);
-    });
+    window.addEventListener('keydown', handleListener);
     // setInterval(() => console.log(direction), 5000);
-    return () => clearInterval(intervalID);
+    return () => {
+      clearInterval(intervalID);
+      removeEventListener('keydown', handleListener);
+    };
   }, [direction, eatFood]);
 
   return (
