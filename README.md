@@ -24,4 +24,4 @@ D => ขวา
 เพื่อฝึกการส่ง Props ระหว่าง Component
 
 
-โปรเจคนี้ใช้ Next.js ไฟล์ เริ่มต้นอยู่ที่ src/page/index.tsx
+โปรเจคนี้ใช้ Next.js ไฟล์ เริ่มต้นอยู่ที่ page/index.tsx
