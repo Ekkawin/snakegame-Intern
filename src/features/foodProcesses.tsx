@@ -1,7 +1,7 @@
 export const isEatFood = (food, arr, callback) => {
-  console.log('food', food);
+  // console.log('food', food);
 
-  console.log('arr', arr);
+  // console.log('arr', arr);
 
   if (
     food.rows === arr[arr.length - 1][0] &&
